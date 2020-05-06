@@ -19,6 +19,16 @@ function App() {
     setSelectedActivity(activities.filter((a) => a.id === id)[0]);
   };
 
+  const handleCreateActivity = (activity: IActivity) => {
+    setActivities([...activities, activity]);
+  };
+
+  const handleEditActivity = (activity: IActivity) => {
+    setActivities([
+      ...activities.filter((a) => a.id === activity.id),
+      activity,
+    ]);
+  };
   const handlerOpenCreateForm = () => {
     setSelectedActivity(null);
     setEditMode(true);
@@ -43,6 +53,8 @@ function App() {
           editMode={editMode}
           setEditMode={setEditMode}
           setSelectedActivity={setSelectedActivity}
+          createActivity={handleCreateActivity}
+          editActivity={handleEditActivity}
         />
       </Container>
     </Fragment>

@@ -6,11 +6,15 @@ import { v4 as uuid } from "uuid";
 interface IProps {
   setEditMode: (editMode: boolean) => void;
   activity: IActivity;
+  createActivity: (activity: IActivity) => void;
+  editActivity: (activity: IActivity) => void;
 }
 
 const ActivityForm: React.FC<IProps> = ({
   setEditMode,
   activity: initialFormState,
+  createActivity,
+  editActivity,
 }) => {
   const initializeForm = () => {
     if (initialFormState) {
@@ -27,16 +31,30 @@ const ActivityForm: React.FC<IProps> = ({
       };
     }
   };
-
   const [activity, setActivity] = useState<IActivity>(initializeForm);
 
-  const handleInputChange = (event: any) => {
-    setActivity({ ...activity, [event.target.name]: event.target.value });
+  const handleSubmit = () => {
+    if (activity.id.length === 0) {
+      let newActivity = {
+        ...activity,
+        id: uuid(),
+      };
+      createActivity(newActivity);
+    } else {
+      editActivity(activity);
+    }
+  };
+
+  const handleInputChange = (
+    event: FormEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = event.currentTarget;
+    setActivity({ ...activity, [name]: value });
   };
 
   return (
     <Segment clearing>
-      <Form>
+      <Form onSubmit={handleSubmit}>
         <Form.Input
           onChange={handleInputChange}
           name="title"
@@ -75,13 +93,14 @@ const ActivityForm: React.FC<IProps> = ({
           placeholder="Venue"
           value={activity.venue}
         />
-        <Button floated="right" positive type="submit" content="Submit" />
         <Button
-          onClick={() => setEditMode(false)}
           floated="right"
-          type="button"
-          content="Cancel"
+          positive
+          type="submit"
+          content="Submit"
+          onClick={handleSubmit}
         />
+        <Button floated="right" type="button" content="Cancel" />
       </Form>
     </Segment>
   );
