@@ -1,7 +1,8 @@
 bin
 obj
 .vscode
+.vs/
 .DS_Store
 appsettings.json
-*.db
-node_modules
+/node_modules
+/Persistence/Migrations/
