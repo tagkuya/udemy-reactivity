@@ -6,3 +6,4 @@ obj
 appsettings.json
 /node_modules
 /Persistence/Migrations/
+API/reactivities.db
