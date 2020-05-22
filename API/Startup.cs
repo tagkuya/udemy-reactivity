@@ -7,6 +7,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Persistence;
+using FluentValidation.AspNetCore;
+using static Application.Activities.Create;
 
 namespace API
 {
@@ -26,9 +28,16 @@ namespace API
             {
                 opt.UseSqlite(Configuration.GetConnectionString("DefaultConnection"));
             });
-            services.AddControllers();
             services.AddMediatR(typeof(List.Handler).Assembly);
             services.AddMediatR(typeof(Details.Handler).Assembly);
+            services.AddControllers().AddFluentValidation(cfg =>
+            {
+                cfg.RegisterValidatorsFromAssemblyContaining<Create>();
+                cfg.RegisterValidatorsFromAssemblyContaining<Delete>();
+                cfg.RegisterValidatorsFromAssemblyContaining<Details>();
+                cfg.RegisterValidatorsFromAssemblyContaining<Edit>();
+            });
+
             services.AddCors(opt =>
             {
                 opt.AddPolicy("CorsPolicy", policy =>

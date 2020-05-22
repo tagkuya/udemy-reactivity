@@ -82,7 +82,10 @@ class ActivityStore {
   @action createActivity = async (activity: IActivity) => {
     this.submitting = true;
     try {
-      await agent.Activities.create(activity);
+      const result = await agent.Activities.create(activity);
+      if (result.status == "400") {
+        return new Promise(result);
+      }
       runInAction("creating activity", () => {
         this.activitiesRegistory.set(activity.id, activity);
         this.submitting = false;

@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Domain;
+using FluentValidation;
 using MediatR;
 using Persistence;
 
@@ -12,6 +13,14 @@ namespace Application.Activities
         public class Query : IRequest<Activity>
         {
             public Guid Id { get; set; }
+        }
+
+        public class CommandValidator : AbstractValidator<Query>
+        {
+            public CommandValidator()
+            {
+                RuleFor(x => x.Id).NotEmpty();
+            }
         }
 
         public class Handler : IRequestHandler<Query, Activity>
