@@ -21,11 +21,11 @@ class ActivityStore {
 
   groupActivitiesByDate = (activities: IActivity[]) => {
     const sortedActivities = activities.sort(
-      (a, b) => a.date!.getTime() - b.date!.getTime()
+      (a, b) => a.date.getTime() - b.date.getTime()
     );
     return Object.entries(
       sortedActivities.reduce((activities, activity) => {
-        const date = activity.date!.toISOString().split('T')[0];
+        const date = activity.date.toISOString().split("T")[0];
         activities[date] = activities[date]
           ? [...activities[date], activity]
           : [activity];
@@ -40,7 +40,7 @@ class ActivityStore {
       const activities = await agent.Activities.list();
       runInAction("loading activities", () => {
         activities.forEach((activity) => {
-          activity.date = new Date(activity.date!);
+          activity.date = new Date(activity.date);
           this.activitiesRegistory.set(activity.id, activity);
         });
         this.loadingInitial = false;
@@ -58,15 +58,17 @@ class ActivityStore {
     let activity = this.getActivity(id);
     if (activity) {
       this.activity = activity;
+      return activity;
     } else {
       this.loadingInitial = true;
       try {
         activity = await agent.Activities.details(id);
         runInAction("getting activity", () => {
-          activity.date = new (activity.date);
+          activity.date = new activity.date();
           this.activity = activity;
           this.loadingInitial = false;
         });
+        return activity;
       } catch (error) {
         runInAction("get activity error", () => {
           this.loadingInitial = false;
@@ -79,7 +81,7 @@ class ActivityStore {
   getActivity = (id: string) => {
     return this.activitiesRegistory.get(id);
   };
-  @action createActivity = async (activity: IActivity) => {
+  @action createActivity = async (activity: any) => {
     this.submitting = true;
     try {
       await agent.Activities.create(activity);
@@ -95,7 +97,7 @@ class ActivityStore {
     }
   };
 
-  @action editActivity = async (activity: IActivity) => {
+  @action editActivity = async (activity: any) => {
     this.submitting = true;
     try {
       await agent.Activities.update(activity);

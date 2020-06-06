@@ -1,6 +1,6 @@
-import React, { useState, FormEvent, useContext, useEffect } from "react";
+import React, { useState, FormEvent, useContext, useEffect, Fragment } from "react";
 import { Segment, Form, Button, Grid } from "semantic-ui-react";
-import { IActivity } from "../../../app/models/activity";
+import { IActivity, IActivityFormValues, ActivityFormValues } from "../../../app/models/activity";
 import { v4 as uuid } from "uuid";
 import ActivityStore from "../../../app/stores/activityStore";
 import { observer } from "mobx-react-lite";
@@ -10,7 +10,7 @@ import TextInput from "../../../app/common/form/TextInput";
 import TextAreaInput from "../../../app/common/form/TextAreaInput";
 import { SelectInput } from "../../../app/common/form/SelectInput";
 import { DateInput } from "../../../app/common/form/DateInput";
-import { DateTimePicker } from "react-widgets";
+import { combineDateAndTime } from "../../../app/common/util/util";
 
 interface DetailParams {
   id: string;
@@ -30,31 +30,17 @@ const ActivityForm: React.FC<RouteComponentProps<DetailParams>> = ({
     clearActivity,
   } = activityStore;
 
-  const [activity, setActivity] = useState<IActivity>({
-    id: "",
-    title: "",
-    category: "",
-    description: "",
-    date: null,
-    city: "",
-    venue: "",
-  });
+  const [activity, setActivity] = useState(new ActivityFormValues());
 
   useEffect(() => {
-    if (match.params.id && activity.id.length === 0) {
-      loadActivity(match.params.id).then(() => {
-        initialFormState && setActivity(initialFormState);
+    if (match.params.id) {
+      loadActivity(match.params.id).then((activity) => {
+        setActivity(new ActivityFormValues(activity));
       });
     }
-    return () => {
-      clearActivity();
-    };
   }, [
     loadActivity,
-    clearActivity,
     match.params.id,
-    initialFormState,
-    activity.id.length,
   ]);
 
   // const handleSubmit = () => {
@@ -74,19 +60,10 @@ const ActivityForm: React.FC<RouteComponentProps<DetailParams>> = ({
   // };
 
   const handleFinalFromSubmit = (values: any) => {
-    if (activity.id.length === 0) {
-      let newActivity = {
-        ...activity,
-        id: uuid(),
-      };
-      createActivity(newActivity).then(() =>
-        history.push(`/activities/${newActivity.id}`)
-      );
-    } else {
-      editActivity(activity).then(() =>
-        history.push(`/activities/${activity.id}`)
-      );
-    }
+    const dateAndTime = combineDateAndTime(values.date, values.time);
+    const { date, time, ...activity } = values;
+    activity.date = dateAndTime;
+    console.log(values);
   }
 
   // const handleInputChange = (
@@ -103,6 +80,7 @@ const ActivityForm: React.FC<RouteComponentProps<DetailParams>> = ({
       <Grid.Column width={10}>
         <Segment clearing>
           <FinalForm
+            initialValues={activity}
             onSubmit={handleFinalFromSubmit}
             render={({ handleSubmit }) => (
               <Form onSubmit={handleSubmit}>
@@ -128,12 +106,24 @@ const ActivityForm: React.FC<RouteComponentProps<DetailParams>> = ({
                   value={activity.category}
                   component={SelectInput}
                 />
-                <Field
-                  name="date"
-                  placeholder="Date"
-                  value={activity.date || null}
-                  component={DateInput}
-                />
+                <Form.Group widths="equal">
+                  <Field
+                    name="date"
+                    placeholder="Date"
+                    date={true}
+                    time={false}
+                    value={activity.date || null}
+                    component={DateInput}
+                  />
+                  <Field
+                    name="time"
+                    placeholder="Time"
+                    date={false}
+                    time={true}
+                    value={activity.date || null}
+                    component={DateInput}
+                  />
+                </Form.Group>
                 <Field
                   type="text"
                   name="city"
