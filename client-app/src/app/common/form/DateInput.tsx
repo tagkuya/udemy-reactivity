@@ -11,12 +11,12 @@ export const DateInput: React.FC<IProps> = ({ input, placeholder, meta: { touche
         <Form.Field error={touched && !!error}>
             <DateTimePicker
                 id={id?.toString()}
+                value={input.value}
                 placeholder={placeholder}
                 onChange={input.onChange}
                 {...rest}
                 date={date}
                 time={time}
-                open={open}
             />
             {touched && !!error && (<Label basic color="red">{error}</Label>)}
         </Form.Field>

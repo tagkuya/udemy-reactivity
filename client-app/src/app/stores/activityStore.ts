@@ -64,7 +64,7 @@ class ActivityStore {
       try {
         activity = await agent.Activities.details(id);
         runInAction("getting activity", () => {
-          activity.date = new activity.date();
+          activity.date = new Date(activity.date);
           this.activity = activity;
           this.loadingInitial = false;
         });
@@ -81,7 +81,8 @@ class ActivityStore {
   getActivity = (id: string) => {
     return this.activitiesRegistory.get(id);
   };
-  @action createActivity = async (activity: any) => {
+
+  @action createActivity = async (activity: IActivity) => {
     this.submitting = true;
     try {
       await agent.Activities.create(activity);
@@ -97,7 +98,7 @@ class ActivityStore {
     }
   };
 
-  @action editActivity = async (activity: any) => {
+  @action editActivity = async (activity: IActivity) => {
     this.submitting = true;
     try {
       await agent.Activities.update(activity);
