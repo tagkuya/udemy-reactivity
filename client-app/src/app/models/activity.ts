@@ -1,5 +1,3 @@
-import { action } from "mobx";
-
 export interface IActivity {
   id: string;
   title: string;

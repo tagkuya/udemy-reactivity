@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Segment, Button, Header, Icon } from "semantic-ui-react";
 import { Link } from "react-router-dom";
 
