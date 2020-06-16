@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 bin
 obj
 .vscode
@@ -7,3 +8,13 @@ appsettings.json
 /node_modules
 /Persistence/Migrations/
 API/reactivities.db
+=======
+bin
+obj
+.vs/
+.DS_Store
+appsettings.json
+/node_modules
+/Persistence/Migrations/
+API/reactivities.db
+>>>>>>> Section12
