@@ -1,10 +1,12 @@
 using System.Collections.Generic;
 using System.Text;
+using API.Middleware;
 using Application;
 using Application.Activities;
 using Application.Interfaces;
 using Domain;
 using FluentValidation.AspNetCore;
+using Infrastructure.Security;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -64,7 +66,7 @@ namespace API
             {
                 cfg.RegisterValidatorsFromAssemblyContaining<Create>();
             })
-            .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
 
             var builder = services.AddIdentityCore<AppUser>();
             var identityBuilder = new IdentityBuilder(builder.UserType, builder.Services);
@@ -84,11 +86,14 @@ namespace API
             });
 
             services.AddScoped<IJwtGenerator, JwtGenerator>();
+            services.AddScoped<IUserAccessor, UserAccessor>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseMiddleware<ErrorHandlingMiddleware>();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
